@@ -34,9 +34,11 @@ app.get('/trainers/:name', async (req: e.Request, res: e.Response) => {
 
 
 
-app.delete('/trainers/:name', (req: e.Request, res: e.Response) => {
-    const name = req.params.name
-    res.send({name})
+app.delete('/trainers/:cpf', async (req: e.Request, res: e.Response) => {
+    const cpf = req.params.cpf
+    if(!cpf) return res.status(400).send({mensage:"cpf não informado"})
+    const deleteTrainerResult = await trainerService.delete(cpf)
+    res.status(204).send()
 })
 
 app.post('/trainers',  async (req: e.Request, res: e.Response) => {
@@ -44,16 +46,20 @@ app.post('/trainers',  async (req: e.Request, res: e.Response) => {
     res.send({trainerToAdd})
   })
 
-
-app.patch('/trainers/:name', (req: e.Request, res: e.Response) => {
-    const name = req.params.name
-    const trainerToAdd = req.body.name
-    res.send({name:trainerToAdd})
-
-})
+app.patch('/trainers/:cpf', async (req: e.Request, res: e.Response) => {
+  try{ 
+    const cpf = req.params.cpf
+    const name = req.body.name
+    const udpdatedUser = {name, cpf}
+    if(!cpf) return res.status(400).send({mensage:"cpf não informado"})
+    await trainerService.patch(cpf, name)
+    res.status(200).send(udpdatedUser)
+ }
+ catch(e:any){return res.status(400).send({mensage:e.message})} 
+  })
 
 app.listen(port, async () => {
   await TypeOrmDataSource.initialize();
-
+  console.log("runnin on port:" + port);
 });
 

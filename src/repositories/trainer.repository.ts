@@ -18,10 +18,14 @@ export class TrainerRepository{
             }
         )
     }
-     async delete(cpf:string){
-
+    //deletar por cpf, atualizar por cpf, pode atualizar só o nome
+     async delete(cpf: string): Promise<void> {
+        await this.repo.delete({ cpf });
     }
-    async patch(cpf:string){
-        
+     async patch(cpf: string, name: string): Promise<void> {
+        await this.repo.update(
+            { cpf },
+            { name }
+        );
     }
 }
